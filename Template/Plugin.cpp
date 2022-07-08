@@ -43,7 +43,7 @@
 
 Logger logger("feature");
 
-bool placeTree = false, placeHug = false;
+bool placeTree = false, placeHug = false, placeOre = false, placeBlockBlobFeature = false;
 
 void PluginInit()
 {
@@ -64,6 +64,31 @@ THook(bool, "?place@HugeFungusFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAV
 {
 	bool  result = 1;
 	if(placeHug)
+		result = original(a1, a2, a3);
+	return result;
+}
+/*THook(std::optional<class BlockPos>, "?place@OreFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
+{
+	std::optional<class BlockPos> result = a2;
+	if (placeOre)
+		result = original(a1, a2, a3, a4);
+	return result;
+}*/
+THook(std::optional<class BlockPos>, "?place@NoSurfaceOreFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
+{
+	std::optional<class BlockPos> result = a2;
+	if (placeOre)
+		result = original(a1, a2, a3, a4);
+	return result;
+}
+THook(short, "?getCloudHeight@OverworldDimension@@UEBAFXZ")
+{
+	return 320;
+}
+THook(bool, "?place@BlockBlobFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAVRandom@@@Z", class BlockSource& a1, class BlockPos const& a2, class Random& a3)
+{
+	bool  result = 1;
+	if (placeHug)
 		result = original(a1, a2, a3);
 	return result;
 }
