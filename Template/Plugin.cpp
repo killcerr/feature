@@ -39,7 +39,7 @@
 #include <MC/CaveFeature.hpp>
 #include <MC/IBlockWorldGenAPI.hpp>
 #include <MC/Random.hpp>
-
+#include <MC/Biome.hpp>
 
 Logger logger("feature");
 
@@ -55,6 +55,7 @@ void PluginInit()
 }
 THook(std::optional<class BlockPos>, "?place@VanillaTreeFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
 {
+	logger.info("placetreefeature:blockpos:x:{},y:{},z:{}", a2.x, a2.y, a2.z);
 	std::optional<class BlockPos> result = a2;
 	if(placeTree)
 		result = original(a1, a2,a3,a4);
@@ -65,6 +66,7 @@ THook(bool, "?place@HugeFungusFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAV
 	bool  result = 1;
 	if(placeHug)
 		result = original(a1, a2, a3);
+	
 	return result;
 }
 /*THook(std::optional<class BlockPos>, "?place@OreFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
@@ -91,4 +93,8 @@ THook(bool, "?place@BlockBlobFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAVR
 	if (placeHug)
 		result = original(a1, a2, a3);
 	return result;
+}
+THook(void, "?setup@ChangeSettingCommand@@SAXAEAVCommandRegistry@@@Z",void* self) {
+	SymCall("?setup@AbilityCommand@@SAXAEAVCommandRegistry@@@Z", void, void*)(self);
+	return original(self);
 }
