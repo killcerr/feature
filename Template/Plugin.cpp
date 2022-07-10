@@ -41,6 +41,9 @@
 #include <MC/Random.hpp>
 #include <MC/Biome.hpp>
 #include <MC/Minecraft.hpp>
+#include <GlobalServiceAPI.h>
+#include <MC/BiomeHeight.hpp>
+#include <MC/BiomeArea.hpp>
 
 Logger logger("feature");
 
@@ -53,11 +56,12 @@ void PluginInit()
 	auto localDate = localtime(&date);
 	logger.setFile("./logs/feature.logs/"+std::to_string(localDate->tm_year+ 1900)+"."+ std::to_string(localDate->tm_mon) + "."+ std::to_string(localDate->tm_wday) + " "+ std::to_string(localDate->tm_hour) + ":"+ std::to_string(localDate->tm_min) + ":"+std::to_string(localDate->tm_sec));
 	logger.info("feature loaded");
-	Level* level = &Level::getBlockSource(0)->getLevel();
-	BiomeRegistry* biomeRegistry = &level->getBiomeRegistry();
+	/*BiomeRegistry* biomeRegistry = &Global<Level>->getBiomeRegistry();
 	biomeRegistry->forEachBiome([=](Biome& biome) {
 		logger.info("name:{},id:{}", biome.getName(), biome.getId());
-		});
+		});*/
+	Biome myBiome(INT_MAX - 1);
+	myBiome.setName("myBiome");
 }
 THook(std::optional<class BlockPos>, "?place@VanillaTreeFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
 {
@@ -65,7 +69,7 @@ THook(std::optional<class BlockPos>, "?place@VanillaTreeFeature@@UEBA?AV?$option
 	std::optional<class BlockPos> result = a2;
 	if(placeTree)
 		result = original(a1, a2,a3,a4);
-
+	//std::cout << "x:" << result->x << "y:" << result->y << "z:" << result->z;
 	return result;
 }
 THook(bool, "?place@HugeFungusFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAVRandom@@@Z", class BlockSource* a1, class BlockPos const* a2, class Random* a3)
@@ -104,4 +108,10 @@ THook(bool, "?place@BlockBlobFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAVR
 THook(void, "?setup@ChangeSettingCommand@@SAXAEAVCommandRegistry@@@Z",void* self) {
 	SymCall("?setup@AbilityCommand@@SAXAEAVCommandRegistry@@@Z", void, void*)(self);
 	return original(self);
+}
+THook(const void*, "?getBiomeArea@TheEndGenerator@@UEBA?AVBiomeArea@@AEBVBoundingBox@@I@Z", class BoundingBox const& a1, unsigned int a2)
+{
+	const BiomeArea biomeArea(a1, a2);
+	const void* ret = &biomeArea;
+	return ret;
 }
