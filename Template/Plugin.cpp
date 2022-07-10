@@ -40,6 +40,7 @@
 #include <MC/IBlockWorldGenAPI.hpp>
 #include <MC/Random.hpp>
 #include <MC/Biome.hpp>
+#include <MC/Minecraft.hpp>
 
 Logger logger("feature");
 
@@ -52,6 +53,11 @@ void PluginInit()
 	auto localDate = localtime(&date);
 	logger.setFile("./logs/feature.logs/"+std::to_string(localDate->tm_year+ 1900)+"."+ std::to_string(localDate->tm_mon) + "."+ std::to_string(localDate->tm_wday) + " "+ std::to_string(localDate->tm_hour) + ":"+ std::to_string(localDate->tm_min) + ":"+std::to_string(localDate->tm_sec));
 	logger.info("feature loaded");
+	Level* level = &Level::getBlockSource(0)->getLevel();
+	BiomeRegistry* biomeRegistry = &level->getBiomeRegistry();
+	biomeRegistry->forEachBiome([=](Biome& biome) {
+		logger.info("name:{},id:{}", biome.getName(), biome.getId());
+		});
 }
 THook(std::optional<class BlockPos>, "?place@VanillaTreeFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
 {
@@ -59,6 +65,7 @@ THook(std::optional<class BlockPos>, "?place@VanillaTreeFeature@@UEBA?AV?$option
 	std::optional<class BlockPos> result = a2;
 	if(placeTree)
 		result = original(a1, a2,a3,a4);
+
 	return result;
 }
 THook(bool, "?place@HugeFungusFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAVRandom@@@Z", class BlockSource* a1, class BlockPos const* a2, class Random* a3)
@@ -66,7 +73,7 @@ THook(bool, "?place@HugeFungusFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAV
 	bool  result = 1;
 	if(placeHug)
 		result = original(a1, a2, a3);
-	
+
 	return result;
 }
 /*THook(std::optional<class BlockPos>, "?place@OreFeature@@UEBA?AV?$optional@VBlockPos@@@std@@AEAVIBlockWorldGenAPI@@AEBVBlockPos@@AEAVRandom@@AEAVRenderParams@@@Z", class IBlockWorldGenAPI& a1, class BlockPos const& a2, class Random& a3, class RenderParams& a4)
