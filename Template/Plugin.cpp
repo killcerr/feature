@@ -105,10 +105,6 @@ THook(bool, "?place@BlockBlobFeature@@UEBA_NAEAVBlockSource@@AEBVBlockPos@@AEAVR
 		result = original(a1, a2, a3);
 	return result;
 }
-THook(void, "?setup@ChangeSettingCommand@@SAXAEAVCommandRegistry@@@Z",void* self) {
-	SymCall("?setup@AbilityCommand@@SAXAEAVCommandRegistry@@@Z", void, void*)(self);
-	return original(self);
-}
 THook(const void*, "?getBiomeArea@TheEndGenerator@@UEBA?AVBiomeArea@@AEBVBoundingBox@@I@Z", class BoundingBox const& a1, unsigned int a2)
 {
 	const BiomeArea biomeArea(a1, a2);
